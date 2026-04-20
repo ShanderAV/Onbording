@@ -3,10 +3,23 @@
       title="msg://UserDetailView.title"
       focusComponent="form">
     <data>
+        <collection id="departmentsDc" class="com.company.onboarding.entity.Department">
+            <loader id="departmentsDl" readOnly="true">
+                <query>
+                    <![CDATA[select d from Department d
+                    order by d.name asc]]>
+                </query>
+            </loader>
+            <fetchPlan extends="_base"/>
+        </collection>
         <instance id="userDc"
                   class="com.company.onboarding.entity.User">
-            <fetchPlan extends="_base"/>
+            <fetchPlan extends="_base">
+                <property name="department" fetchPlan="_base"/>
+                <property name="steps" fetchPlan="_base"/>
+            </fetchPlan>
             <loader/>
+            <collection id="stepsDc" property="steps"/>
         </instance>
     </data>
     <actions>
@@ -32,7 +45,34 @@
             <textField id="emailField" property="email"/>
             <comboBox id="timeZoneField" property="timeZoneId" clearButtonVisible="true"/>
             <checkbox id="activeField" property="active"/>
+            <select id="onboardingStatusField" property="onboardingStatus"/>
+            <entityComboBox id="departmentField" property="department" itemsContainer="departmentsDc"/>
         </formLayout>
+        <hbox id="stepsButtonsPanel" classNames="buttons-panel">
+            <button action="stepsDataGrid.createAction"/>
+            <button action="stepsDataGrid.editAction"/>
+            <button action="stepsDataGrid.removeAction"/>
+        </hbox>
+        <dataGrid id="stepsDataGrid" dataContainer="stepsDc" width="100%" height="100%">
+            <actions>
+                <action id="createAction" type="list_create">
+                    <properties>
+                        <property name="openMode" value="DIALOG"/>
+                    </properties>
+                </action>
+                <action id="editAction" type="list_edit">
+                    <properties>
+                        <property name="openMode" value="DIALOG"/>
+                    </properties>
+                </action>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns>
+                <column property="dueDate"/>
+                <column property="comletedDate"/>
+                <column property="sortValue"/>
+            </columns>
+        </dataGrid>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveCloseAction"/>
             <button id="closeButton" action="closeAction"/>

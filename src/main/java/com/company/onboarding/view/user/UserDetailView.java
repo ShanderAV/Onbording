@@ -1,16 +1,23 @@
 package com.company.onboarding.view.user;
 
 import com.company.onboarding.entity.OnboardingStatus;
+import com.company.onboarding.entity.Step;
 import com.company.onboarding.entity.User;
+import com.company.onboarding.entity.UserStep;
 import com.company.onboarding.view.main.MainView;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.Route;
+import io.jmix.core.DataManager;
 import io.jmix.core.EntityStates;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.textfield.TypedTextField;
+import io.jmix.flowui.model.CollectionPropertyContainer;
+import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.view.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -92,6 +99,40 @@ public class UserDetailView extends StandardDetailView<User> {
                     .show();
 
             newEntity = false;
+        }
+    }
+
+    @Autowired
+    private DataManager dataManager;
+
+    @ViewComponent
+    private DataContext dataContext;
+
+    @ViewComponent
+    private CollectionPropertyContainer<UserStep> stepsDc;
+
+    @Subscribe(id = "buttonsPanel", subject = "clickListener")
+    public void onButtonsPanelClick(final ClickEvent<HorizontalLayout> event) {
+        User user = getEditedEntity();
+        if (user.getJoiningDate() == null){
+            notifications.create("Невозможно создать шаг без JoiningDate").show();
+            return;
+        }
+        List<Step> steps = dataManager.load(Step.class)
+                .query("select s from Step s order by s.sortValue asc")
+                .list();
+
+        for (Step step : steps){
+             if (stepsDc.getItems().stream().noneMatch(userStep ->
+                    userStep.getStep().equals(step))){
+                UserStep userStep = dataContext.create(UserStep.class);
+                userStep.setUser(user);
+                userStep.setStep(step);
+                userStep.setDueDate(user.getJoiningDate().plusDays(step.getDuration()));
+                userStep.setSortValue(step.getSortValue());
+                stepsDc.getMutableItems().add(userStep);
+
+            }
         }
     }
 }

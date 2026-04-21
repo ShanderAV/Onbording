@@ -18,9 +18,7 @@
                 <property name="department" fetchPlan="_base"/>
                 <property name="steps" fetchPlan="_base">
                     <property name="step" fetchPlan="_base">
-                        <property name="name"/>
                     </property>
-                    <property name="comletedDate"/>
                 </property>
             </fetchPlan>
             <loader/>

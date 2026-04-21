@@ -23,8 +23,10 @@ import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.component.UiComponentsGenerator;
 import io.jmix.flowui.component.textfield.TypedTextField;
+import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionPropertyContainer;
 import io.jmix.flowui.model.DataContext;
+import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.view.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -147,6 +149,30 @@ public class UserDetailView extends StandardDetailView<User> {
         }
     }
 
+    @Subscribe(id = "stepsDc", target = Target.DATA_CONTAINER)
+    public void onStepsDcItemPropertyChange(final InstanceContainer.ItemPropertyChangeEvent<UserStep> event) {
+        updateOnboardingStatus();
+    }
+
+    @Subscribe(id = "stepsDc", target = Target.DATA_CONTAINER)
+    public void onStepsDcCollectionChange(final CollectionContainer.CollectionChangeEvent<UserStep> event) {
+        updateOnboardingStatus();
+    }
+
+    private  void updateOnboardingStatus(){
+        User user = getEditedEntity();
+        long comletedCount = user.getSteps() == null ? 0 :
+                user.getSteps().stream().filter( us -> us.getComletedDate() != null)
+                        .count();
+        if(comletedCount == 0){
+            user.setOnboardingStatus(OnboardingStatus.NOT_STARTED);
+        } else if(comletedCount == user.getSteps().size()){
+            user.setOnboardingStatus(OnboardingStatus.COMPLETED);
+        } else{
+            user.setOnboardingStatus(OnboardingStatus.IN_PROGRESS);
+        }
+
+    }
     @Supply(to = "stepsDataGrid.completed", subject = "renderer")
     private Renderer<UserStep> stepsDataGridCompletedRenderer() {
         return new ComponentRenderer<>(userStep -> {

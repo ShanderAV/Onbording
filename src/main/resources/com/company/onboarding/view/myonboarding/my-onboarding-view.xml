@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://myOnboardingView.title">
+    <data>
+        <collection id="userStepsDc" class="com.company.onboarding.entity.UserStep">
+            <fetchPlan extends="_base">
+                <property name="step" fetchPlan="_base">
+                </property>
+            </fetchPlan>
+            <loader id="userStepsDl">
+                <query>
+                    <![CDATA[select e from UserStep e where e.user = :user2 order by e.sortValue asc]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="false"/>
+    </facets>
+    <layout>
+        <dataGrid id="userStepsDataGrid" dataContainer="userStepsDc" minWidth="100px" width="100%">
+            <actions/>
+            <columns>
+                <column property="step.name"/>
+                <column property="dueDate"/>
+                <column property="comletedDate"/>
+            </columns>
+        </dataGrid>
+    </layout>
+</view>

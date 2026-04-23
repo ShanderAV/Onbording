@@ -15,6 +15,17 @@
         <dataLoadCoordinator auto="true"/>
     </facets>
     <layout>
+        <genericFilter id="genericFilter" dataLoader="usersDl">
+        <configurations>
+        <configuration id="defaultConfiguration" name="Configuration with multiple conditions"
+                       default="true">
+            <propertyFilter property="firstName" operation="CONTAINS"
+                            operationEditable="true"/>
+            <propertyFilter property="lastName" operation="CONTAINS"
+                            operationEditable="true"/>
+        </configuration>
+        </configurations>
+        </genericFilter>
         <dataGrid id="usersDataGrid" dataContainer="usersDc" themeNames="column-borders row-stripes" minWidth="20em" width="100%">
             <actions/>
             <columns>

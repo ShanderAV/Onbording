@@ -21,8 +21,6 @@
                        default="true">
             <propertyFilter property="firstName" operation="CONTAINS"
                             operationEditable="true"/>
-            <propertyFilter property="lastName" operation="CONTAINS"
-                            operationEditable="true"/>
         </configuration>
         </configurations>
         </genericFilter>

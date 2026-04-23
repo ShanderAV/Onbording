@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://dataGridLargeDataset.title">
+    <data>
+        <collection id="usersDc" class="com.company.onboarding.entity.User">
+            <fetchPlan extends="_local"/>
+            <loader id="usersDl">
+                <query>
+                    <![CDATA[select e from User e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <layout>
+        <dataGrid id="usersDataGrid" dataContainer="usersDc" themeNames="column-borders row-stripes" minWidth="20em" width="100%">
+            <actions/>
+            <columns>
+                <column property="username" filterable="true"/>
+                <column property="firstName"/>
+                <column property="lastName"/>
+                <column property="onboardingStatus"/>
+                <column property="version"/>
+            </columns>
+        </dataGrid>
+    </layout>
+</view>

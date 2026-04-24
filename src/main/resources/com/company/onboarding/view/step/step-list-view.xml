@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
       title="msg://stepListView.title"
       focusComponent="stepsDataGrid">
     <data>
@@ -31,8 +30,8 @@
             <properties include=".*"/>
         </genericFilter>
         <hbox>
-            <h4 text="Прогресс бар:" />
-            <button id="controlButton" text="Старт" icon="START_COG" themeNames="tertiary-inline" iconAfterText="true"/>
+            <h4 text="Поцесс:" />
+            <button id="controlButton" text="Старт" icon="PLAY_CIRCLE" themeNames="success" iconAfterText="true"/>
         </hbox>
 
         <hbox classNames="justify-between" width="100%">

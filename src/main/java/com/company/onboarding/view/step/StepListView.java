@@ -74,9 +74,7 @@ public class StepListView extends StandardListView<Step> {
 
           @Override
           public void progress(@NonNull List<Integer> changes) {
-              //super.progress(changes);
               double lastVal = changes.getLast();
-              //double lastVal = changes.size() -1;
               double value = lastVal / ITERATION;
 
               if (value < 1){
@@ -84,7 +82,7 @@ public class StepListView extends StandardListView<Step> {
                   controlButton.setText("Стоп");
               } else {
                 labelSpan.setText("Готово.");
-                controlButton.setIcon(VaadinIcon.START_COG.create());
+                controlButton.setIcon(VaadinIcon.PLAY_CIRCLE.create());
                   controlButton.setText("Старт");
               }
               progressB.setValue(value);

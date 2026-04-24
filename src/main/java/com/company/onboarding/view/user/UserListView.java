@@ -39,9 +39,11 @@ public class UserListView extends StandardListView<User> {
             if (fileRef == null) {
                 return null;
             }
+
             Image image = uiComponents.create(Image.class);
             image.setWidth("30px");
             image.setHeight("30px");
+            //fileRef.getFileName();
             StreamResource streamResource = new StreamResource(
                     fileRef.getFileName(),
                     () -> fileStorage.openStream(fileRef)

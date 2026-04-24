@@ -30,6 +30,16 @@
                        dataLoader="stepsDl">
             <properties include=".*"/>
         </genericFilter>
+        <hbox>
+            <h4 text="Прогресс бар:" />
+            <button id="controlButton" text="Старт" icon="START_COG" themeNames="tertiary-inline" iconAfterText="true"/>
+        </hbox>
+
+        <hbox classNames="justify-between" width="100%">
+            <span id="labelSpan" text="Готов к старту"/>
+            <span id="percentSpan" text="0%"/>
+        </hbox>
+        <progressBar id="progressB" width="100%"/>
         <hbox id="buttonsPanel" classNames="buttons-panel">
             <startSlot>
                 <button id="createButton" action="stepsDataGrid.createAction"/>

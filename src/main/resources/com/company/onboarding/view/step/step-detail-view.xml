@@ -23,8 +23,8 @@
                 <responsiveStep minWidth="40em" columns="2"/>
             </responsiveSteps>
             <textField id="nameField" property="name"/>
-            <textField id="durationField" property="duration"/>
-            <textField id="sortValueField" property="sortValue"/>
+            <integerField id="durationField" property="duration"/>
+            <integerField id="sortValueField" property="sortValue"/>
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveCloseAction"/>

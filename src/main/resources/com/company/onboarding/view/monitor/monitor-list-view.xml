@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://monitorListView.title"
+      focusComponent="monitorsDataGrid">
+    <data>
+        <collection id="monitorsDc"
+                    class="com.company.onboarding.entity.Monitor">
+            <loader id="monitorsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Monitor e order by e.dateTest desc, e.timeTest desc]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="monitorsDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <startSlot>
+                <button id="createButton" action="monitorsDataGrid.createAction"/>
+                <button id="editButton" action="monitorsDataGrid.editAction"/>
+                <button id="removeButton" action="monitorsDataGrid.removeAction"/>
+            </startSlot>
+            <endSlot>
+                <simplePagination id="pagination" dataLoader="monitorsDl"/>
+            </endSlot>
+        </hbox>
+        <dataGrid id="monitorsDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="monitorsDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="editAction" type="list_edit"/>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="dateTest"/>
+                <column property="timeTest"/>
+                <column property="lowpres"/>
+                <column property="upperpres"/>
+                <column property="pulse"/>
+                <column property="status"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

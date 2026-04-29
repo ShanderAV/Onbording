@@ -32,7 +32,7 @@ public class UserListView extends StandardListView<User> {
     @Autowired
     private Downloader downloader;
 
-    @Supply(to = "usersDataGrid.picture", subject = "renderer")
+    /*@Supply(to = "usersDataGrid.picture", subject = "renderer")
     private Renderer<User> usersDataGridPictureRenderer() {
         return new ComponentRenderer<>(user -> {
             FileRef fileRef = user.getPicture();
@@ -53,5 +53,6 @@ public class UserListView extends StandardListView<User> {
              //StreamResource streamResource = new StreamResource(fileRef.getFileName(), () -> fileStorage.openStream(fileRef));
             return image;
         });
-    }
+
+    }*/
 }

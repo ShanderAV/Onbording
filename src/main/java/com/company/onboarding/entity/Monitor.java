@@ -1,9 +1,13 @@
 package com.company.onboarding.entity;
 
+import io.jmix.core.MetadataTools;
 import io.jmix.core.annotation.DeletedBy;
 import io.jmix.core.annotation.DeletedDate;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.DependsOnProperties;
+import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
+import io.jmix.core.metamodel.datatype.DatatypeFormatter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,7 +17,9 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @JmixEntity
-@Table(name = "MONITOR")
+@Table(name = "MONITOR", indexes = {
+        @Index(name = "IDX_MONITOR_USER", columnList = "USER_ID")
+})
 @Entity
 public class Monitor {
     @JmixGeneratedValue
@@ -37,16 +43,20 @@ public class Monitor {
     @Column(name = "DATE_TEST", nullable = false)
     private LocalDate dateTest;
 
+    @JoinColumn(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @Column(name = "TIME_TEST")
     private LocalTime timeTest;
-
-    @NotNull
-    @Column(name = "LOWPRES", nullable = false)
-    private Integer lowpres;
 
     @Column(name = "UPPERPRES", nullable = false)
     @NotNull
     private Integer upperpres;
+
+    @NotNull
+    @Column(name = "LOWPRES", nullable = false)
+    private Integer lowpres;
 
     @Column(name = "PULSE", nullable = false)
     @NotNull
@@ -54,6 +64,25 @@ public class Monitor {
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name = "NOTE")
+    private String note;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public DirHealth getStatus() {
         return status == null ? null : DirHealth.fromId(status);
@@ -135,4 +164,11 @@ public class Monitor {
         this.id = id;
     }
 
+    @InstanceName
+    @DependsOnProperties({"user", "dateTest"})
+    public String getInstanceName(MetadataTools metadataTools, DatatypeFormatter datatypeFormatter) {
+        return String.format("%s %s",
+                metadataTools.format(user),
+                datatypeFormatter.formatLocalDate(dateTest));
+    }
 }

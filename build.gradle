@@ -12,7 +12,7 @@ jmix {
 }
 
 group = 'com.company'
-version = '0.0.2'
+version = '0.0.3'
 
 repositories {
     mavenCentral()
@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.jmix.translations:jmix-translations-ru'
+
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'
     implementation 'io.jmix.security:jmix-security-starter'

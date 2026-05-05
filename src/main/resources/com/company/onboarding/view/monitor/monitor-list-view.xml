@@ -50,7 +50,7 @@
                 <action id="removeAction" type="list_remove"/>
             </actions>
             <columns resizable="true">
-                <column property="dateTest"/>
+                <column property="dateTest" />
                 <column property="timeTest"/>
                 <column property="upperpres"/>
                 <column property="lowpres"/>

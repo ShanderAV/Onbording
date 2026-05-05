@@ -50,7 +50,9 @@ public class StepListView extends StandardListView<Step> {
        } else if( taskHandler != null || taskHandler.isAlive()){
            taskHandler.cancel();
            labelSpan.setText("Остановлено");
-           event.getSource().setIcon(VaadinIcon.REFRESH.create());
+           controlButton.setIcon(VaadinIcon.PLAY.create());
+           controlButton.setThemeName("primary");
+           controlButton.setText("Старт");
        }
 
     }
@@ -79,11 +81,14 @@ public class StepListView extends StandardListView<Step> {
 
               if (value < 1){
                  labelSpan.setText("Выполнение...");
+                  controlButton.setIcon(VaadinIcon.PAUSE.create());
+                  controlButton.setThemeName("primary error");
                   controlButton.setText("Стоп");
               } else {
                 labelSpan.setText("Готово.");
-                controlButton.setIcon(VaadinIcon.PLAY_CIRCLE.create());
-                  controlButton.setText("Старт");
+                controlButton.setIcon(VaadinIcon.PLAY.create());
+                controlButton.setThemeName("primary");
+                controlButton.setText("Старт");
               }
               progressB.setValue(value);
               percentSpan.setText(Double.valueOf(value*100).intValue() + "%");

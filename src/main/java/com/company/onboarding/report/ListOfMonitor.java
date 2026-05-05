@@ -7,6 +7,7 @@ import io.jmix.core.DataManager;
 import io.jmix.core.Sort;
 import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.core.querycondition.PropertyCondition;
+import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.reports.annotation.*;
 import io.jmix.reports.entity.DataSetType;
 import io.jmix.reports.entity.ParameterType;
@@ -72,8 +73,8 @@ import java.util.Map;
                 //where ra.username = ${Users.username}
                 //order by dateTest desc, timeTest desc
                 query = """
-                        select u.DATE_TEST  as "dateTest", u.TIME_TEST  as "timeTest", u.UPPERPRES  as "upperpres", u.LOWPRES as "lowres", u.PULSE  as "pulse"
-                        from MONITOR u
+                        select u.DATE_TEST  as "dateTest", u.TIME_TEST  as "timeTest", u.UPPERPRES  as "upperpres", u.LOWPRES as "lowpres", u.PULSE  as "pulse"
+                        from MONITOR u  
                         where u.DELETED_DATE  is NULL
                         """
         )
@@ -91,9 +92,11 @@ import java.util.Map;
 // <<< end example code
 public class ListOfMonitor {
     private final DataManager dataManager;
+    private final CurrentAuthentication currentAuthentication;
 
-    public ListOfMonitor(DataManager dataManager) {
+    public ListOfMonitor(DataManager dataManager, CurrentAuthentication currentAuthentication) {
         this.dataManager = dataManager;
+        this.currentAuthentication = currentAuthentication;
     }
 
     // >>> begin example code
@@ -119,25 +122,27 @@ public class ListOfMonitor {
     @DataSetDelegate(name = "mon")
     public ReportDataLoader orderStatusDataLoader() {
         return (reportQuery, parentBand, params) -> {
-            //select u.dateTest, u.timeTest, u.upperpres, u.lowpres, u.pulse
-            //"dateTest", "timeTest",
+            final User user = (User) currentAuthentication.getUser();
+
             List<KeyValueEntity> keyValueEntities = dataManager.loadValues("""
                         select u.dateTest, u.timeTest, u.upperpres, u.lowpres, u.pulse
                         from Monitor u
-                        where (:dateTo is null or u.dateTest <= :dateTo) and 
-                              (:dateFrom is null or u.dateTest >= :dateFrom) 
-                        order by u.dateTest desc""")
-                    .properties("dateTest", "timeTest", "upperpres", "lowres", "pulse")
+                        where u.user = :a_user and
+                         (:dateTo is null or u.dateTest <= :dateTo) and
+                         (:dateFrom is null or u.dateTest >= :dateFrom)
+                         order by u.dateTest desc""")
+                    .properties("dateTest", "timeTest", "upperpres", "lowpres", "pulse")
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
+                    .parameter("a_user", user)
                     .list();
             return keyValueEntities.stream()
                     .map(kve -> {
                         Map<String, Object> map = new HashMap<>();
-                        //map.put("dateTest", kve.getValue("dateTest"));
-                        //map.put("timeTest", kve.getValue("timeTest"));
+                        map.put("dateTest", kve.getValue("dateTest"));
+                        map.put("timeTest", kve.getValue("timeTest"));
                         map.put("upperpres", kve.getValue("upperpres"));
-                        map.put("lowres", kve.getValue("lowres"));
+                        map.put("lowpres", kve.getValue("lowpres"));
                         map.put("pulse", kve.getValue("pulse"));
                         return map;
                     })

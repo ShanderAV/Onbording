@@ -8,6 +8,15 @@
             <fetchPlan extends="_base"/>
             <loader id="preparatAcceptDl"/>
         </instance>
+        <collection id="preparatsDc" class="com.company.onboarding.entity.Preparat">
+            <loader id="preparatsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Preparat e]]>
+                </query>
+            </loader>
+            <fetchPlan extends="_base"/>
+        </collection>
+
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
@@ -23,12 +32,13 @@
                 <responsiveStep minWidth="40em" columns="2"/>
             </responsiveSteps>
             <dateTimePicker id="acceptedDateField" property="acceptedDate"/>
-            <entityPicker id="preparatField" property="preparat">
+            <entityComboBox id="entityComboBox" property="preparat" itemsContainer="preparatsDc"/>
+            <!--<entityPicker id="preparatField" property="preparat">
                 <actions>
                     <action id="entityLookupAction" type="entity_lookup"/>
                     <action id="entityClearAction" type="entity_clear"/>
                 </actions>
-            </entityPicker>
+            </entityPicker>-->
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveCloseAction"/>

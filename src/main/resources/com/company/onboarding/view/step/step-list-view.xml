@@ -16,7 +16,6 @@
     <facets>
         <dataLoadCoordinator auto="true"/>
         <urlQueryParameters>
-            <genericFilter component="genericFilter"/>
             <pagination component="pagination"/>
         </urlQueryParameters>
     </facets>
@@ -25,13 +24,9 @@
         <action id="discardAction" type="lookup_discard"/>
     </actions>
     <layout>
-        <genericFilter id="genericFilter"
-                       dataLoader="stepsDl">
-            <properties include=".*"/>
-        </genericFilter>
         <hbox>
-            <h4 text="Поцесс:" />
-            <button id="controlButton" text="Старт" icon="PLAY_CIRCLE" themeNames="success" iconAfterText="true"/>
+            <h4 text="Фоновый процесс:" />
+            <button id="controlButton" text="Старт" icon="PLAY" themeNames="primary"/>
         </hbox>
 
         <hbox classNames="justify-between" width="100%">

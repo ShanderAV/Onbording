@@ -34,6 +34,8 @@
                 <button id="createButton" action="monitorsDataGrid.createAction"/>
                 <button id="editButton" action="monitorsDataGrid.editAction"/>
                 <button id="removeButton" action="monitorsDataGrid.removeAction"/>
+                <button id="print" text="msg://print.text"/>
+
             </startSlot>
             <endSlot>
                 <simplePagination id="pagination" dataLoader="monitorsDl"/>

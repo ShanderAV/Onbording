@@ -1,10 +1,10 @@
 package com.company.onboarding.report;
 
-import com.company.onboarding.entity.Monitor;
 import com.company.onboarding.entity.User;
 import com.company.onboarding.view.monitor.MonitorListView;
 import io.jmix.core.DataManager;
 import io.jmix.core.Sort;
+import io.jmix.core.TimeSource;
 import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.core.querycondition.PropertyCondition;
 import io.jmix.core.security.CurrentAuthentication;
@@ -14,6 +14,11 @@ import io.jmix.reports.entity.ParameterType;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +61,8 @@ import java.util.Map;
 )
 @BandDef(
         name = "Header",
-        parent = "Root"
+        parent = "Root",
+        dataSets = @DataSetDef(name = "header", type = DataSetType.DELEGATE)
 )
 @BandDef(
         name = "Mon",
@@ -93,10 +99,24 @@ import java.util.Map;
 public class ListOfMonitor {
     private final DataManager dataManager;
     private final CurrentAuthentication currentAuthentication;
+    private final TimeSource timeSource;
 
-    public ListOfMonitor(DataManager dataManager, CurrentAuthentication currentAuthentication) {
+    public ListOfMonitor(DataManager dataManager, CurrentAuthentication currentAuthentication, TimeSource timeSource) {
         this.dataManager = dataManager;
         this.currentAuthentication = currentAuthentication;
+        this.timeSource = timeSource;
+    }
+    @DataSetDelegate(name = "header")
+    public ReportDataLoader headerDataLoader() {
+        return (reportQuery, parentBand, params) ->
+            List.of(
+                    Map.of(
+                            "dateFrom", ReportUtils.formatDateTime(params.get("dateFrom"), "dd.MM.yyyy"),
+                            "dateTo", ReportUtils.formatDateTime(params.get("dateTo"), "dd.MM.yyyy"),
+                            "generatedAt", ReportUtils.formatDateTime(LocalDateTime.now(), "dd.MM.yyyy HH:mm:ss")
+                    )
+            );
+
     }
 
     // >>> begin example code
@@ -148,5 +168,31 @@ public class ListOfMonitor {
                     })
                     .toList();
         };
+    }
+
+    private static class ReportUtils {
+        public static Object formatDateTime(Object value, String pattern) {
+            if (value == null) {
+                return "";
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+
+            if (value instanceof LocalDateTime ldt) {
+                //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                String str = ldt.format(formatter);
+                return str;
+            }else if (value instanceof LocalDate ld) {
+                String str = ld.format(formatter);
+                return str;
+            }else if (value instanceof Date d) {
+                return d.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime()
+                        .format(formatter);
+            }else {
+                // на ваше усмотрение – либо выбросить ошибку, либо вернуть toString()
+                return value.toString();
+            }
+        }
     }
 }

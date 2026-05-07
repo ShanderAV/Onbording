@@ -9,7 +9,7 @@
             <fetchPlan extends="_base"/>
             <loader id="preparatAcceptsDl" readOnly="true">
                 <query>
-                    <![CDATA[select e from PreparatAccept e where e.user = :user1]]>
+                    <![CDATA[select e from PreparatAccept e where e.user = :user1 order by e.acceptedDate desc]]>
                 </query>
             </loader>
         </collection>

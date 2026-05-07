@@ -11,12 +11,9 @@ import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.*;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.runner.ReportRunner;
-import io.jmix.reports.yarg.reporting.ReportOutputDocument;
 import io.jmix.reportsflowui.runner.ParametersDialogShowMode;
 import io.jmix.reportsflowui.runner.UiReportRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
 
 
 @Route(value = "monitors", layout = MainView.class)
@@ -29,8 +26,6 @@ public class MonitorListView extends StandardListView<Monitor> {
     private CurrentAuthentication currentAuthentication;
     @ViewComponent
     private CollectionLoader<Monitor> monitorsDl;
-    @Autowired
-    private ReportRunner reportRunner;
     @Autowired
     private UiReportRunner uiReportRunner;
 
@@ -45,12 +40,13 @@ public class MonitorListView extends StandardListView<Monitor> {
 
     @Subscribe(id = "print", subject = "clickListener")
     public void onPrintClick(final ClickEvent<JmixButton> event) {
+        final User user = (User) currentAuthentication.getUser();
         uiReportRunner.byReportCode("list-of-monitor")
+                .withParametersDialogShowMode(ParametersDialogShowMode.YES)
                 .withOutputType(ReportOutputType.XLSX)
-                .withOutputNamePattern("11122.xlsx")
-                .withParametersDialogShowMode(ParametersDialogShowMode.IF_REQUIRED)
-                .inBackground(this)
+                .withOutputNamePattern("list-of-monitor_"+ user.getUsername() + ".xlsx")
                 .runAndShow();
+        //.inBackground(this)
         //.withParams(Map.of("param1", "value1"))
 
     }

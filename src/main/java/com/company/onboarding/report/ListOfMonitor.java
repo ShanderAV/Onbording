@@ -27,8 +27,9 @@ import java.util.Map;
 
 @ReportDef(
         code = "list-of-monitor",
-        name = "List Of Monitor",
-        uuid = "761b689b-4e51-4a7e-b445-f480c99f6c68"
+        name = "Журнал контроля измерения давления",
+        uuid = "761b689b-4e51-4a7e-b445-f480c99f6c68",
+        group = Reports_group.class
 )
 @AvailableInViews(viewClasses = MonitorListView.class)
 @TemplateDef(
@@ -41,13 +42,13 @@ import java.util.Map;
 
 @InputParameterDef(
         alias = "dateFrom",
-        name = "From",
+        name = "Начало",
         type = ParameterType.DATE
 )
 
 @InputParameterDef(
         alias = "dateTo",
-        name = "To",
+        name = "Окончание",
         type = ParameterType.DATE,
         defaultDateIsCurrent = true
 )
@@ -93,10 +94,14 @@ import java.util.Map;
         )
 )
 @BandDef(
+        name = "HeaderUsers",
+        parent = "Root"
+)
+@BandDef(
         name = "Users",
         parent = "Root",
         dataSets = @DataSetDef(
-                name = "users",
+                name = "Users",
                 type = DataSetType.DELEGATE
         )
 )
@@ -132,6 +137,7 @@ public class ListOfMonitor {
                     Map.of(
                             "dateFrom", ReportUtils.formatDateTime(params.get("dateFrom"), "dd.MM.yyyy"),
                             "dateTo", ReportUtils.formatDateTime(params.get("dateTo"), "dd.MM.yyyy"),
+                            "user", ((User) currentAuthentication.getUser()).getDisplayName(),
                             "generatedAt", ReportUtils.formatDateTime(LocalDateTime.now(), "dd.MM.yyyy HH:mm:ss")
                     )
             );
@@ -139,11 +145,11 @@ public class ListOfMonitor {
     }
 
     // >>> begin example code
-    @DataSetDelegate(name = "users")
+    @DataSetDelegate(name = "Users")
             public ReportDataLoader usersDataLoader() {
         return (reportQuery, parentBand, params) -> {
             List<User> users = dataManager.load(User.class)
-                    .condition(PropertyCondition.contains("username", params.get("username")).skipNullOrEmpty())
+                    .condition(PropertyCondition.isSet("firstName", true))
                     .sort(Sort.by("username"))
                     .list();
             return users.stream()

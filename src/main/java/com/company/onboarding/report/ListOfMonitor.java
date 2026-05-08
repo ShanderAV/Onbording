@@ -14,6 +14,8 @@ import io.jmix.reports.entity.ParameterType;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -69,6 +71,11 @@ import java.util.Map;
         parent = "Root",
         dataSets = @DataSetDef(name = "mon", type = DataSetType.DELEGATE)
 )
+@BandDef(
+        name = "MonTrailer",
+        parent = "Root",
+        dataSets = @DataSetDef(name = "MonTrailer", type = DataSetType.DELEGATE)
+)
 
 @BandDef(
         name = "Monitors",
@@ -97,6 +104,18 @@ import java.util.Map;
 
 // <<< end example code
 public class ListOfMonitor {
+    // Компьютеды
+    private final ThreadLocal<BigDecimal> countRecords =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO);
+    private final ThreadLocal<BigDecimal> avgUpperPres =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO);
+    private final ThreadLocal<BigDecimal> avgLowPres =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO);
+    private final ThreadLocal<BigDecimal> avgPulse =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO);
+
+
+
     private final DataManager dataManager;
     private final CurrentAuthentication currentAuthentication;
     private final TimeSource timeSource;
@@ -141,6 +160,11 @@ public class ListOfMonitor {
     // <<< end example code
     @DataSetDelegate(name = "mon")
     public ReportDataLoader orderStatusDataLoader() {
+        countRecords.set(BigDecimal.ZERO);
+        avgUpperPres.set(BigDecimal.ZERO);
+        avgLowPres.set(BigDecimal.ZERO);
+        avgPulse.set(BigDecimal.ZERO);
+
         return (reportQuery, parentBand, params) -> {
             final User user = (User) currentAuthentication.getUser();
 
@@ -158,15 +182,47 @@ public class ListOfMonitor {
                     .list();
             return keyValueEntities.stream()
                     .map(kve -> {
+                        countRecords.set(countRecords.get().add(BigDecimal.ONE));
+                        avgUpperPres.set(avgUpperPres.get().add( new BigDecimal("" + kve.getValue("upperpres"))));
+                        avgLowPres.set(avgLowPres.get().add(new BigDecimal("" + kve.getValue("lowpres"))));
+                        avgPulse.set(avgPulse.get().add(new BigDecimal("" + kve.getValue("pulse"))));
                         Map<String, Object> map = new HashMap<>();
                         map.put("dateTest", kve.getValue("dateTest"));
                         map.put("timeTest", kve.getValue("timeTest"));
                         map.put("upperpres", kve.getValue("upperpres"));
                         map.put("lowpres", kve.getValue("lowpres"));
                         map.put("pulse", kve.getValue("pulse"));
+                        map.put("rowNum", countRecords.get());
                         return map;
                     })
                     .toList();
+        };
+    }
+
+    @DataSetDelegate(name = "MonTrailer")
+    public ReportDataLoader clientTotalDataLoader() {
+        return (reportQuery, parentBand, params) -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("rowCount", countRecords.get()); // <5>
+            /*runningGrandTotal.set(
+                    runningGrandTotal.get().add(runningClientTotal.get())
+            ); // <6>*/
+            map.put("avgUpperPres", avgUpperPres.get());
+            if (countRecords.get().compareTo(BigDecimal.ZERO) != 0){
+                avgUpperPres.set(avgUpperPres.get().divide(new BigDecimal(String.valueOf(countRecords.get())), 0,BigDecimal.ROUND_UP));
+                map.put("avgUpperPres", avgUpperPres.get());
+
+                avgLowPres.set(avgLowPres.get().divide(new BigDecimal(String.valueOf(countRecords.get())), 0,BigDecimal.ROUND_UP));
+                map.put("avgLowPres", avgLowPres.get());
+
+                avgPulse.set(avgPulse.get().divide(new BigDecimal(String.valueOf(countRecords.get())), 0,BigDecimal.ROUND_UP));
+                map.put("avgPulse", avgPulse.get());
+            }
+
+
+            countRecords.set(BigDecimal.ZERO);
+
+            return List.of(map);
         };
     }
 

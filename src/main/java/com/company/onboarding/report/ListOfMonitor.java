@@ -31,7 +31,9 @@ import java.util.Map;
         uuid = "761b689b-4e51-4a7e-b445-f480c99f6c68",
         group = Reports_group.class
 )
+
 @AvailableInViews(viewClasses = MonitorListView.class)
+
 @TemplateDef(
         isDefault = true,
         code = "DEFAULT",

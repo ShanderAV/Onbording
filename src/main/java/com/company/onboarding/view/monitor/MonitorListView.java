@@ -1,19 +1,26 @@
 package com.company.onboarding.view.monitor;
 
+
 import com.company.onboarding.entity.Monitor;
 import com.company.onboarding.entity.User;
 import com.company.onboarding.view.main.MainView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.security.CurrentAuthentication;
+import io.jmix.flowui.Notifications;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.*;
+import io.jmix.quartz.service.QuartzService;
+import io.jmix.quartz.util.QuartzJobClassFinder;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.runner.ReportRunner;
 import io.jmix.reportsflowui.runner.ParametersDialogShowMode;
 import io.jmix.reportsflowui.runner.UiReportRunner;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static com.company.onboarding.view.login.LoginView.log;
 
 
 @Route(value = "monitors", layout = MainView.class)
@@ -28,6 +35,11 @@ public class MonitorListView extends StandardListView<Monitor> {
     private CollectionLoader<Monitor> monitorsDl;
     @Autowired
     private UiReportRunner uiReportRunner;
+    @Autowired
+    private QuartzService quartzService;
+    @Autowired
+    private Notifications notifications;
+
 
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
@@ -49,6 +61,26 @@ public class MonitorListView extends StandardListView<Monitor> {
         //.inBackground(this)
         //.withParams(Map.of("param1", "value1"))
 
+    }
+
+
+
+    @Subscribe(id = "executeProcess", subject = "clickListener")
+    public void onExecuteProcessClick(final ClickEvent<JmixButton> event) {
+        String jobName = "MyFirstJob";  // Имя вашей задачи из UI Quartz
+        String jobGroup = "DEFAULT";
+
+        try {
+            if (quartzService.checkJobExists(jobName, jobGroup)) {
+                quartzService.executeNow(jobName, jobGroup);
+                log.info("Задача {} успешно запущена...", jobName);
+            } else {
+                log.warn("Задача {} не найдена", jobName);
+            }
+        } catch (Exception e) {
+            log.error("Ошибка при запуске задачи", e);
+        }
+        notifications.show("Задача стартовала...");
     }
 
 }

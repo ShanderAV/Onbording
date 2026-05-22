@@ -44,6 +44,7 @@
                         <actionItem id="showUserSubstitutionsItem" ref="usersDataGrid.showUserSubstitutionsAction"/>
                     </items>
                 </dropdownButton>
+                <button id="print" text="msg://print.text" />
             </startSlot>
             <endSlot>
                 <simplePagination id="pagination" dataLoader="usersDl"/>

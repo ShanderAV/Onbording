@@ -1,5 +1,6 @@
 package com.company.onboarding.report;
 
+import com.company.onboarding.entity.Monitor;
 import com.company.onboarding.entity.User;
 import com.company.onboarding.view.monitor.MonitorListView;
 import com.company.onboarding.view.user.UserListView;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @ReportDef(
         code = "user-preparat",
@@ -67,18 +69,29 @@ import java.util.Map;
                 type = DataSetType.DELEGATE
         )
 )
+
 @BandDef(
-        name = "Roles",
+        name = "Moni",
         parent = "User",
         dataSets = @DataSetDef(
-                name = "roles",
+                name = "Moni",
                 type = DataSetType.SQL,
                 query = """
-                        select ra.role_code as "role", ra.role_type as "type"
-                         from sec_role_assignment ra
-                         where ra.username = ${User.username}"""
+                        select r.upperpres as "upperpres"
+                         from MONITOR r
+                        where r.user_id = ${User.id}
+                        """
         )
 )
+@BandDef(
+        name = "Monitor",
+        parent = "Root",
+        dataSets = @DataSetDef(
+                name = "Monitor",
+                type = DataSetType.DELEGATE
+        )
+)
+
 // <<< end example code
 public class UserPreparat {
     private final DataManager dataManager;
@@ -109,11 +122,34 @@ public class UserPreparat {
             Map<String, Object> fields = new HashMap<>();
             fields.put("firstname", user.getFirstName());
             fields.put("lastname", user.getLastName());
+            fields.put("email", user.getEmail());
             //fields.put("accountManager", client.getAccountManager() == null ?
              //       "" : metadataTools.getInstanceName(client.getAccountManager()));
             return List.of(fields);
         };
 
+    }
+
+    @DataSetDelegate(name = "Monitor")
+    public ReportDataLoader monitorDataLoader() {
+        return (reportQuery, parentBand, params) -> {
+            User a_user = (User) params.get("user");
+            List<Monitor> records = dataManager.load(Monitor.class)
+                    .condition(PropertyCondition.equal("user", a_user))
+                    .sort(Sort.by(Sort.Direction.DESC,"dateTest")).sort(Sort.by(Sort.Direction.DESC,"timeTest"))
+                    .list();
+            return records.stream()
+                    .map(r -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("dateTest", r.getDateTest());
+                        map.put("timeTest", r.getTimeTest());
+                        map.put("upperpres", r.getUpperpres());
+                        map.put("lowpres", r.getLowpres());
+                        map.put("pulse", r.getPulse());
+                        return map;
+                    })
+                    .toList();
+        };
     }
     // <<< end example code
 }

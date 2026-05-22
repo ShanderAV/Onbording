@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.jmix.quartz:jmix-quartz-starter'
+    implementation 'io.jmix.quartz:jmix-quartz-flowui-starter'
+
     implementation 'io.jmix.reports:jmix-reports-rest-starter'
     implementation 'io.jmix.reports:jmix-reports-flowui-starter'
     implementation 'io.jmix.reports:jmix-reports-starter'

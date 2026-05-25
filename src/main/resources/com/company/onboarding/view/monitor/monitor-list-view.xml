@@ -36,6 +36,7 @@
                 <button id="removeButton" action="monitorsDataGrid.removeAction"/>
                 <button id="print" text="msg://print.text"/>
                 <button id="executeProcess" text="msg://execute.text"/>
+                <button id="executeRabbitMQ" text="msg://RabbitMQ"/>
             </startSlot>
             <endSlot>
                 <simplePagination id="pagination" dataLoader="monitorsDl"/>

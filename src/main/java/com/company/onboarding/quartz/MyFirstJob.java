@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 // import com.yourcompany.yourproject.service.MyHeavyService;
 //@DisallowConcurrentExecution // Запрещает параллельное выполнение этого Job
 public class MyFirstJob implements Job {
-      // Запрещает параллельное выполнение этого Job
+    // Запрещает параллельное выполнение этого Job
     private static final Logger log = LoggerFactory.getLogger(MyFirstJob.class);
 
     // Вы можете внедрять любые Spring-бины, как в обычном сервисе [citation:2][citation:4]
@@ -23,21 +23,24 @@ public class MyFirstJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // Quartz будет ждать, пока предыдущий запуск завершится
         // --- Здесь, будет ваша продолжительная задача ---
-        log.info("===> Моя первая Quartz задача успешно запущена!!! <===");
-        for (int i=0;i<=10;i++){
+        // класс MyFirstJob и  jobName = "MyFirstJob" связаны в UI Quartz
+        // можно создать динамически через -> JobDetail jobDetail = JobBuilder.newJob(MyFirstJob.class).withIdentity(jobName, jobGroup).storeDurably().build();
+        // Регистрируем задачу в Quartz
+        //quartzService.scheduleJob(jobDetail, null); // null = без триггера
+
+        log.info("===> Моя задача MyFirstJob из Quartz  успешно запущена!!! <===");
+        for (int i = 0; i <= 10; i++) {
             try {
                 Thread.sleep(2000);
                 log.info("Шаг {} из 10", i);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            // Представьте, что здесь происходит долгий процесс, например, вызов API, обработка файлов и т.д.
+            // myHeavyService.doHeavyWork();
 
+            // Если во время работы что-то пошло не так, можно выбросить исключение
+            // throw new JobExecutionException("Критическая ошибка во время выполнения задачи!");
         }
-
-        // Представьте, что здесь происходит долгий процесс, например, вызов API, обработка файлов и т.д.
-        // myHeavyService.doHeavyWork();
-
-        // Если во время работы что-то пошло не так, можно выбросить исключение
-        // throw new JobExecutionException("Критическая ошибка во время выполнения задачи!");
     }
 }

@@ -41,9 +41,6 @@ public class MonitorListView extends StandardListView<Monitor> {
     private QuartzService quartzService;
     @Autowired
     private Notifications notifications;
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
 
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
@@ -67,37 +64,5 @@ public class MonitorListView extends StandardListView<Monitor> {
 
     }
 
-
-
-    @Subscribe(id = "executeProcess", subject = "clickListener")
-    public void onExecuteProcessClick(final ClickEvent<JmixButton> event) {
-        String jobName = "MyFirstJob";  // Имя вашей задачи из UI Quartz
-        String jobGroup = "DEFAULT";
-
-        try {
-            if (quartzService.checkJobExists(jobName, jobGroup)) {
-                quartzService.executeNow(jobName, jobGroup);
-                log.info("Задача {} успешно запущена...", jobName);
-            } else {
-                log.warn("Задача {} не найдена", jobName);
-            }
-        } catch (Exception e) {
-            log.error("Ошибка при запуске задачи", e);
-        }
-        notifications.show("Задача стартовала...");
-    }
-
-    @Subscribe(id = "executeRabbitMQ", subject = "clickListener")
-    public void onExecuteRabbitMQClick(final ClickEvent<JmixButton> event) {
-        // Создаём сообщение с параметрами задачи
-        JobMessage message = new JobMessage("HEAVY_COMPUTATION", "some-parameter");
-        // Отправляем в очередь — метод НЕ БЛОКИРУЕТ UI
-        //private static final String QUEUE_NAME = "test_queue";
-        String QUEUE_NAME = "test_queue";
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
-
-        notifications.create("Задача отправлена в очередь").show();
-
-    }
 
 }

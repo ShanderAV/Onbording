@@ -48,7 +48,6 @@ public class JobConsumer {
             try {
                 // Выполняем длительные вычисления
                 performHeavyComputation(message);
-
                 // Сохраняем результат (опционально)
                 log.info("Задача {} успешно выполнена", message.getJobId());
 
@@ -60,13 +59,15 @@ public class JobConsumer {
     }
     private void performHeavyComputation(JobMessage message) {
         // Симуляция долгой работы
-        try {
-            Thread.sleep(10000); // 10 секунд
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        for (int i = 10; i >= 0; i--) {
+            try {
+                log.info(message.getJobId() + " -> Шаг " + i);
+                Thread.sleep(1000); // 10 секунд
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            // Ваша бизнес-логика здесь
+            // Например, работа с DataManager, вызов внешних API и т.д.
         }
-
-        // Ваша бизнес-логика здесь
-        // Например, работа с DataManager, вызов внешних API и т.д.
     }
 }

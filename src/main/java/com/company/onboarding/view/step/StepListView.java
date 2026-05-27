@@ -122,7 +122,16 @@ public class StepListView extends StandardListView<Step> {
     @Subscribe(id = "executeRabbitMQ", subject = "clickListener")
     public void onExecuteRabbitMQClick(final ClickEvent<JmixButton> event) {
         // Создаём сообщение с параметрами задачи
-        JobMessage message = new JobMessage("HEAVY_COMPUTATION", "some-parameter");
+        String json_params = """
+            {
+                "id": 101,
+                "title": "Jmix",
+                "completed": false,
+                "userId": 1,
+                "tags": ["rest", "json", "jmix"]
+            }
+            """;
+        JobMessage message = new JobMessage("HEAVY_COMPUTATION", json_params);
         // Отправляем в очередь — метод НЕ БЛОКИРУЕТ UI
         //private static final String QUEUE_NAME = "test_queue";
         String QUEUE_NAME = "test_queue";

@@ -1,5 +1,8 @@
 package com.company.onboarding.messaging;
 import com.company.onboarding.dto.JobMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jmix.core.DataManager;
 import io.jmix.core.security.SystemAuthenticator;
 import org.slf4j.Logger;
@@ -19,7 +22,7 @@ public class JobConsumer {
     @Autowired
     private SystemAuthenticator systemAuthenticator;
 
-    @RabbitListener(queues = "test_queue")
+   /* @RabbitListener(queues = "test_queue")
     public void processJob(JobMessage message) {
         // Запускаем с системной аутентификацией для доступа к БД
         systemAuthenticator.runWithSystem(() -> {
@@ -37,13 +40,27 @@ public class JobConsumer {
                 // Здесь можно отправить сообщение в очередь ошибок (DLQ)
             }
         });
-    }
+    }*/
 
     @RabbitListener(queues = "test_queue")
     public void processJob1(JobMessage message) {
         // Запускаем с системной аутентификацией для доступа к БД
+        //json_params
+        String ls_params = "any parms...";
+       ObjectMapper objectMapper = new ObjectMapper();
+        ls_params = message.getParameter().toString();
+        try {
+            JsonNode root = objectMapper.readTree(ls_params);
+            if (root.has("id")) {
+               ls_params = root.get("id").asText();
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        String finalLs_params = ls_params;
         systemAuthenticator.runWithSystem(() -> {
-            log.info("2. слушатель. Получена задача: {}, параметр: {}", message.getJobType(), message.getParameter());
+            log.info("2. слушатель. Получена задача: {}, параметр id: {}", message.getJobType(), finalLs_params);
 
             try {
                 // Выполняем длительные вычисления

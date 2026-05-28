@@ -2,6 +2,7 @@ package com.company.onboarding.view.step;
 
 import com.company.onboarding.dto.JobMessage;
 import com.company.onboarding.entity.Step;
+import com.company.onboarding.service.BasicAuthImprovedService;
 import com.company.onboarding.view.main.MainView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,8 @@ import io.jmix.flowui.backgroundtask.BackgroundTask;
 import io.jmix.flowui.backgroundtask.BackgroundTaskHandler;
 import io.jmix.flowui.backgroundtask.BackgroundWorker;
 import io.jmix.flowui.backgroundtask.TaskLifeCycle;
+import io.jmix.flowui.download.DownloadFormat;
+import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.view.*;
 import io.jmix.quartz.service.QuartzService;
@@ -22,8 +25,12 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -160,21 +167,41 @@ public class StepListView extends StandardListView<Step> {
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private Downloader downloader;
 
     @Subscribe(id = "PostLK", subject = "clickListener")
     public void onPostLKClick(final ClickEvent<JmixButton> event) {
-
-        // Данные для отправки (обычная строка JSON)
-        String jsonBody ="{\"organ_guid_in_gis\": \"985781c0-2159-4831-b48b-333460f77e88\"," +
-                " \"fias\": \"9007cc2d-b40b-4597-9451-35c0209a28e3\"}";
-        restTemplate = new RestTemplate();
-        //
         try {
-            JsonNode result = postJson("http://192.168.1.41:8019/dataexporting/export-gishouse-data", jsonBody);
-            //System.out.println("Ответ: " + result.toPrettyString());
-            notifications.show("Ответ получен.");
+            ResponseEntity<JsonNode> response = downloadTextAsFile();
+            if (response.getBody() != null) {
+                //JsonNode responsejson = response.getBody();
+                byte[] fileContent = response.getBody().toPrettyString().getBytes(StandardCharsets.UTF_8);
+                if (fileContent.length > 0) {
+                    // (4) Инициируем скачивание в браузере
+                    downloader.download(
+                            fileContent,                // данные
+                            "response_from_lk_api.json",   // имя файла для сохранения
+                            DownloadFormat.JSON
+                    );
+                    notifications.show("Ответ сохранен.");
+                } else {
+                    notifications.show("Не удалось получить данные из API.");
+                }
+
+            }
+            // сохранение на сервере
+            /*JsonNode result = postJson("http://192.168.1.41:8019/dataexporting/export-gishouse-data", jsonBody);
+            String filePath = "response_lk.txt";
+            if (result != null) {
+                // Запись строки в файл (создаст или перезапишет файл)
+                Files.write(Paths.get(filePath), result.toPrettyString().getBytes());
+                notifications.show("Ответ сохранен в " + filePath + ".");
+            }*/
+
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JSON", e);
+            //throw new RuntimeException("Failed to parse JSON", e);
+            throw new RuntimeException("Ошибка при скачивании:", e);
         }
 
     }
@@ -193,7 +220,6 @@ public class StepListView extends StandardListView<Step> {
                 requestEntity,
                 JsonNode.class
         );
-
         // 4. Проверяем статус ответа
         if (response.getStatusCode() == HttpStatus.CREATED ||
                 response.getStatusCode() == HttpStatus.OK) {
@@ -201,5 +227,70 @@ public class StepListView extends StandardListView<Step> {
         } else {
             throw new RuntimeException("Request failed with status: " + response.getStatusCode());
         }
+    }
+    @GetMapping("/download-text-as-file")
+    public ResponseEntity<JsonNode> downloadTextAsFile() throws Exception {
+        String jsonBody ="{\"organ_guid_in_gis\": \"985781c0-2159-4831-b48b-333460f77e88\"," +
+                " \"fias\": \"9007cc2d-b40b-4597-9451-35c0209a28e3\"}";
+
+        restTemplate = new RestTemplate();
+
+        String apiUrl = "http://192.168.1.41:8019/dataexporting/export-gishouse-data";
+        // 1. Создаём заголовки
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 2. Оборачиваем JSON тело в HttpEntity с заголовками
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
+        // 3. Отправляем запрос через exchange (более гибкий метод)
+        ResponseEntity<JsonNode> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.POST,
+                requestEntity,
+                JsonNode.class
+        );
+
+        JsonNode content = response.getBody();
+        if (content == null) {
+            throw new Exception(ResponseEntity.noContent().build().toString());
+        }
+        // Заголовки для скачивания текстового файла
+        HttpHeaders fheaders = new HttpHeaders();
+        fheaders.setContentType(MediaType.APPLICATION_JSON); // или TEXT_PLAIN
+        fheaders.setContentDispositionFormData("filename", "response_from_lk_api.json");
+
+        return new ResponseEntity<JsonNode>(content, fheaders, HttpStatus.OK);
+
+    }
+
+    @Autowired
+    private BasicAuthImprovedService basicAuthService;
+
+    @Subscribe(id = "exchange1c", subject = "clickListener")
+    public void onExchange1cClick(final ClickEvent<JmixButton> event) {
+        String result = basicAuthService.getWithBasicAuth(
+                "https://1s.rf11.ru/Rezo30/hs/Kontr/dolg/1101006547/",
+                "БахтинИС",
+                "ba1202"
+        );
+        if (result == null ) {
+            notifications.show("Не удалось получить результат из API.");
+            return;
+        }
+
+        byte[] fileContent = result.getBytes(StandardCharsets.UTF_8);
+
+        if (fileContent.length == 0) {
+            notifications.show("Не удалось получить данные из API.");
+            return;
+         }
+            // (4) Инициируем скачивание в браузере
+        downloader.download(
+                fileContent,                // данные
+                "response_from_1s_1101006547.json",   // имя файла для сохранения
+                DownloadFormat.JSON
+        );
+        notifications.show("Ответ сохранен.");
     }
 }

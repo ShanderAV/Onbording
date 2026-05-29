@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://api1cview.title">
+    <layout width="100%" height="100%">
+        <hbox alignItems="END"  width="100%">
+            <textField id="tf_inn" label="ИНН" value="1101006547" placeholder="msg://inn1.placeholder"/>
+            <button id="getrequest" text="msg://getrequest.text" icon="TWIN_COLUMN_SELECT_ALL" themeNames="primary" />
+            <button id="clear" text="msg://clear.text"/>
+        </hbox>
+        <vbox expand="resultTextArea">
+            <checkbox id="cb_savemode"  label="Сохранить в файл."/>
+            <textArea id="resultTextArea" label="Результат"  width="100%" minRows="10" maxRows="30" />
+        </vbox>
+    </layout>
+</view>

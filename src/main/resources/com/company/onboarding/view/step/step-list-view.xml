@@ -30,7 +30,6 @@
             <button id="executeProcess" text="msg://executeProcess.text"/>
             <button id="executeRabbitMQ" text="msg://RabbitMQ"/>
             <button id="PostLK" text= "msg://PostLK.text"/>
-            <button id="exchange1c" text="msg://exchange1c.text"/>
         </hbox>
 
         <hbox classNames="justify-between" width="100%">

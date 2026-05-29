@@ -264,33 +264,4 @@ public class StepListView extends StandardListView<Step> {
 
     }
 
-    @Autowired
-    private BasicAuthImprovedService basicAuthService;
-
-    @Subscribe(id = "exchange1c", subject = "clickListener")
-    public void onExchange1cClick(final ClickEvent<JmixButton> event) {
-        String result = basicAuthService.getWithBasicAuth(
-                "https://1s.rf11.ru/Rezo30/hs/Kontr/dolg/1101006547/",
-                "БахтинИС",
-                "ba1202"
-        );
-        if (result == null ) {
-            notifications.show("Не удалось получить результат из API.");
-            return;
-        }
-
-        byte[] fileContent = result.getBytes(StandardCharsets.UTF_8);
-
-        if (fileContent.length == 0) {
-            notifications.show("Не удалось получить данные из API.");
-            return;
-         }
-            // (4) Инициируем скачивание в браузере
-        downloader.download(
-                fileContent,                // данные
-                "response_from_1s_1101006547.json",   // имя файла для сохранения
-                DownloadFormat.JSON
-        );
-        notifications.show("Ответ сохранен.");
-    }
 }

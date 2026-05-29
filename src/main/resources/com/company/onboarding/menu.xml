@@ -10,6 +10,7 @@
         <item view="Step.list" title="msg://com.company.onboarding.view.step/stepListView.title"/>
         <item view="Department.list" title="msg://com.company.onboarding.view.department/departmentListView.title"/>
         <separator/>
+        <item view="Api1cview" title="msg://com.company.onboarding.view.api1c/api1cview.title"/>
     </menu>
     <menu id="direct" description="msg://com.company.onboarding/menu_config.direct.description"
           title="msg://com.company.onboarding/menu_config.direct.title">

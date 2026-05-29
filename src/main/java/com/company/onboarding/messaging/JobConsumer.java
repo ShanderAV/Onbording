@@ -22,7 +22,7 @@ public class JobConsumer {
     @Autowired
     private SystemAuthenticator systemAuthenticator;
 
-   /* @RabbitListener(queues = "test_queue")
+    @RabbitListener(queues = "test_queue")
     public void processJob(JobMessage message) {
         // Запускаем с системной аутентификацией для доступа к БД
         systemAuthenticator.runWithSystem(() -> {
@@ -40,7 +40,7 @@ public class JobConsumer {
                 // Здесь можно отправить сообщение в очередь ошибок (DLQ)
             }
         });
-    }*/
+    }
 
     @RabbitListener(queues = "test_queue")
     public void processJob1(JobMessage message) {

@@ -1,6 +1,7 @@
 package com.company.onboarding.view.api1c;
 
 
+import com.company.onboarding.app.ReportGenerationService;
 import com.company.onboarding.service.BasicAuthImprovedService;
 import com.company.onboarding.view.main.MainView;
 import com.vaadin.flow.component.ClickEvent;
@@ -13,6 +14,7 @@ import io.jmix.flowui.download.DownloadFormat;
 import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.view.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,6 +28,8 @@ public class Api1cview extends StandardView {
     private final Notifications notifications;
 
     private final Downloader downloader;
+    @Autowired
+    private ReportGenerationService reportGenerationService;
 
     public Api1cview(BasicAuthImprovedService basicAuthService,
                      Notifications notifications,
@@ -76,5 +80,13 @@ public class Api1cview extends StandardView {
     @Subscribe(id = "clear", subject = "clickListener")
     public void onClearClick(final ClickEvent<JmixButton> event) {
         resultTextArea.clear();
+    }
+
+    @Subscribe(id = "jasperTest", subject = "clickListener")
+    public void onJasperTestClick(final ClickEvent<JmixButton> event) {
+
+        reportGenerationService.generateAndShowCustomerReport();
+
+
     }
 }

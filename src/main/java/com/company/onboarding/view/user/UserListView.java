@@ -46,14 +46,21 @@ public class UserListView extends StandardListView<User> {
 
     @Subscribe(id = "print", subject = "clickListener")
     public void onPrintClick(final ClickEvent<JmixButton> event) {
-        //final User user = (User) currentAuthentication.getUser();
-        uiReportRunner.byReportCode("user-preparat")
+        final User user = (User) currentAuthentication.getUser();
+        /*uiReportRunner.byReportCode("user-preparat")
                 .withParametersDialogShowMode(ParametersDialogShowMode.YES)
                 .withOutputType(ReportOutputType.DOCX)
                 .withOutputNamePattern("user-preparat_report.docx")
+                .runAndShow();*/
+        uiReportRunner.byReportCode("user-preparat")
+                .withParametersDialogShowMode(ParametersDialogShowMode.NO)
+                .addParam("user", user)
+                .withOutputType(ReportOutputType.DOCX)
+                .withOutputNamePattern("user-preparat_report.docx")
                 .runAndShow();
-    }
 
+    }
+    //ReportOutputType.DOCX
     /*@Supply(to = "usersDataGrid.picture", subject = "renderer")
     private Renderer<User> usersDataGridPictureRenderer() {
         return new ComponentRenderer<>(user -> {

@@ -79,8 +79,19 @@ public class User implements JmixUserDetails, HasTimeZone {
     @Column(name = "PICTURE", length = 1024)
     private FileRef picture;
 
+    @Column(name = "TEST")
+    private String test;
+
     @Transient
     private Collection<? extends GrantedAuthority> authorities;
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
 
     public FileRef getPicture() {
         return picture;

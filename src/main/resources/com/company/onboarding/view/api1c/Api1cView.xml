@@ -6,6 +6,7 @@
             <textField id="tf_inn" label="ИНН" value="1101006547" placeholder="msg://inn1.placeholder"/>
             <button id="getrequest" text="msg://getrequest.text" icon="TWIN_COLUMN_SELECT_ALL" themeNames="primary" />
             <button id="clear" text="msg://clear.text"/>
+            <button id="jasperTest" text="msg://jasperTest.text"/>
         </hbox>
         <vbox expand="resultTextArea">
             <checkbox id="cb_savemode"  label="Сохранить в файл."/>

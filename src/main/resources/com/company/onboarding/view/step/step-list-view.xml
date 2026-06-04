@@ -29,7 +29,8 @@
             <button id="controlButton" text="Старт" icon="PLAY" themeNames="primary"/>
             <button id="executeProcess" text="msg://executeProcess.text"/>
             <button id="executeRabbitMQ" text="msg://RabbitMQ"/>
-            <button id="PostLK" text= "msg://PostLK.text"/>
+            <button id="PostLK" text="msg://PostLK1.text"/>
+
         </hbox>
 
         <hbox classNames="justify-between" width="100%">

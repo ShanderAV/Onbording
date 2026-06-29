@@ -1,0 +1,118 @@
+<!-- src/main/resources/io/jmix/reports/templates/simple_report/template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Отчёт</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            margin: 40px;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total {
+            background-color: #e8f4f8;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>${reportTitle}</h1>
+
+<div class="info">
+    <p>Периоды: ${startDate} - ${endDate}</p>
+    <p>Менеджер: ${managerName}</p>
+    <p>Всего записей: ${totalRecords}</p>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>№</th>
+        <th>Дата</th>
+        <th>Нижнее</th>
+        <th class="text-right">Верхнее</th>
+        <th class="text-right">Пульс</th>
+    </tr>
+    </thead>
+    <tbody>
+    ${tableRows}
+    </tbody>
+    <tfoot>
+    <tr class="total">
+        <td colspan="4" class="text-right"><strong>ИТОГО:</strong></td>
+        <td class="text-right"><strong>${totalAmount}</strong></td>
+    </tr>
+    </tfoot>
+</table>
+<table class="body">
+    <thead>
+    <tr>
+        <th>Кол1</th>
+        <th>Кол2</th>
+        <th>Кол3</th>
+        <th>Кол4</th>
+        <th>Кол5</th>
+    </tr>
+    </thead>
+    <tfoot>
+    </tfoot>
+</table>
+<div class="footer">
+    <p>Документ сгенерирован автоматически ${currentDate}</p>
+    <p>Подпись: __________________</p>
+</div>
+
+</body>
+</html>

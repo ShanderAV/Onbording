@@ -33,10 +33,17 @@ import java.util.Map;
 )
 
 @AvailableInViews(viewClasses = MonitorListView.class)
+@TemplateDef(
+        isDefault = true,                   // Этот шаблон будет использоваться по умолчанию
+        code = "pdf-print-version",        // Уникальный код шаблона
+        filePath = "com/company/onboarding/report/list-of-monitor.xlsx",
+        outputType = ReportOutputType.PDF // Результат будет в PDF
+
+)
 
 @TemplateDef(
-        isDefault = true,
-        code = "DEFAULT",
+        isDefault = false,
+        code = "excel-print-version",
         filePath = "com/company/onboarding/report/list-of-monitor.xlsx",
         outputType = ReportOutputType.XLSX,
         outputNamePattern = "list-of-monitor.xlsx"
@@ -80,7 +87,7 @@ import java.util.Map;
         dataSets = @DataSetDef(name = "MonTrailer", type = DataSetType.DELEGATE)
 )
 
-@BandDef(
+/*@BandDef(
         name = "Monitors",
         parent = "Root",
         dataSets = @DataSetDef(
@@ -94,7 +101,7 @@ import java.util.Map;
                         where u.DELETED_DATE  is NULL
                         """
         )
-)
+)*/
 @BandDef(
         name = "HeaderUsers",
         parent = "Root"
@@ -194,6 +201,7 @@ public class ListOfMonitor {
                         avgUpperPres.set(avgUpperPres.get().add( new BigDecimal("" + kve.getValue("upperpres"))));
                         avgLowPres.set(avgLowPres.get().add(new BigDecimal("" + kve.getValue("lowpres"))));
                         avgPulse.set(avgPulse.get().add(new BigDecimal("" + kve.getValue("pulse"))));
+                        //
                         Map<String, Object> map = new HashMap<>();
                         map.put("dateTest", kve.getValue("dateTest"));
                         map.put("timeTest", kve.getValue("timeTest"));
@@ -234,7 +242,7 @@ public class ListOfMonitor {
         };
     }
 
-    private static class ReportUtils {
+    public static class ReportUtils {
         public static Object formatDateTime(Object value, String pattern) {
             if (value == null) {
                 return "";

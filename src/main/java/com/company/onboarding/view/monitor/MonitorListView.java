@@ -1,6 +1,5 @@
 package com.company.onboarding.view.monitor;
 
-
 import com.company.onboarding.dto.JobMessage;
 import com.company.onboarding.entity.Monitor;
 import com.company.onboarding.entity.User;
@@ -9,6 +8,8 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.download.DownloadFormat;
+import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.*;
@@ -16,11 +17,14 @@ import io.jmix.quartz.service.QuartzService;
 import io.jmix.quartz.util.QuartzJobClassFinder;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.runner.ReportRunner;
+import io.jmix.reports.yarg.reporting.ReportOutputDocument;
 import io.jmix.reportsflowui.runner.ParametersDialogShowMode;
 import io.jmix.reportsflowui.runner.UiReportRunner;
 import org.quartz.SchedulerException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.FileOutputStream;
 
 import static com.company.onboarding.view.login.LoginView.log;
 
@@ -38,9 +42,14 @@ public class MonitorListView extends StandardListView<Monitor> {
     @Autowired
     private UiReportRunner uiReportRunner;
     @Autowired
+    private ReportRunner reportRunner;
+    @Autowired
     private QuartzService quartzService;
     @Autowired
     private Notifications notifications;
+
+    @Autowired
+    private Downloader downloader;
 
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
@@ -59,8 +68,37 @@ public class MonitorListView extends StandardListView<Monitor> {
                 .withOutputType(ReportOutputType.XLSX)
                 .withOutputNamePattern("list-of-monitor_"+ user.getUsername() + ".xlsx")
                 .runAndShow();
+
+
+        //".xlsx"
         //.inBackground(this)
-        //.withParams(Map.of("param1", "value1"))
+        //.withParams(Map.of("param1", "value1"))*/
+         /*
+         ReportOutputDocument reportDocument = reportRunner.byReportCode("list-of-monitor")
+                .addParam("user", user) // Передаем параметр, если он нужен
+                .withOutputType(ReportOutputType.XLSX) // Указываем тип
+                .withOutputNamePattern("list-of-monitor_" + user.getUsername() + ".xlsx")
+                .run();
+
+        //byte[] excelContent = reportDocument.getContent();
+        try {
+
+            byte[] pdfContent = pdfConverter.convertToPdf(
+                    reportDocument.getContent(),
+                    "list-of-monitor_" + user.getUsername() + ".pdf"
+            );
+            downloader.download(
+                    pdfContent,                           // массив байтов
+                    "list-of-monitor_" + user.getUsername() + ".pdf",              // имя файла
+                    // DownloadFormat.OCTET_STREAM
+                    DownloadFormat.PDF
+            );
+
+
+        } catch (Exception e) {
+            log.error("Ошибка конвертации в PDF", e);
+            // показать сообщение пользователю
+        }*/
 
     }
 
